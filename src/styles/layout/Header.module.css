@@ -1,0 +1,15 @@
+.header {
+    height: 60px;
+    background-color: #2e2e46;
+    margin-left: 220px;
+    padding: 15px 30px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .header h1 {
+    margin: 0;
+    font-size: 1.3rem;
+  }
+  

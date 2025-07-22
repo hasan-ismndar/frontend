@@ -1,0 +1,73 @@
+.container {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 20px;
+    background-color: #f9f9f9;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.title {
+    margin-top: 40px;
+    color: #333;
+}
+
+.tableContainer {
+    overflow-x: auto;
+    margin-top: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 400px;
+}
+
+.cell,
+.header {
+    text-align: right;
+    padding: 12px 16px;
+    border-bottom: 1px solid #eee;
+}
+
+.header {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+@media (max-width: 600px) {
+
+    .cell,
+    .header {
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+
+    .title {
+        font-size: 20px;
+    }
+}
+
+.inviteButton {
+    padding: 10px 16px;
+    background-color: #0070f3;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.inviteButton:hover {
+    background-color: #005ac1;
+}
+
+.btnStyle {
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+}
