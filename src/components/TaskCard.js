@@ -4,11 +4,10 @@ import Link from 'next/link';
 export default function TaskCard({ task, onClick, onEdit, onDelete, permissions }) {
   const endDate = new Date(task.endDate)
   const dateOnly = new Date(endDate).toLocaleDateString('en-CA');
-  console.log(`${task.id} ${task.permissions}`)
   return (
 
     <div className={styles.card}
-      onClick={() => onClick?.()}
+      onClick={() => onClick?.(task)}
     >
       <div className={styles.header}>
         <h3>{task.title}</h3>
@@ -20,12 +19,12 @@ export default function TaskCard({ task, onClick, onEdit, onDelete, permissions 
       <p className={styles.meta}>
         <strong>المسؤول:</strong> {task.assignee.username}<br />
         <strong>الموعد:</strong> {dateOnly}<br />
-        <strong>الأولوية:</strong> {task.priority}
+        <strong>الأولوية:</strong> {task.priority}<br />
       </p>
 
       <div style={{ display: 'flex', gap: '10px' }}>
         <button
-          disabled={!permissions.includes('edit_task')}
+          disabled={!(task.role == 'owner' || task.allowed)}
           className={styles.button}
           onClick={(e) => {
             e.stopPropagation();
@@ -37,7 +36,7 @@ export default function TaskCard({ task, onClick, onEdit, onDelete, permissions 
           تعديل
         </button>
         <button
-          disabled={!permissions.includes('delete_task')}
+          disabled={!(task.role == 'owner')}
           className={styles.button}
           onClick={(e) => {
             e.stopPropagation();

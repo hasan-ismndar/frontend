@@ -119,7 +119,7 @@ export default function Projects({ initialProjects }) {
             <ProjectCard
               key={project.id}
               project={project}
-              permissions={project.permissions}
+              role={project.role}
               onEdit={() => onUserUpdate(project)}
               onDelete={() => deleteProject(project.id)}
             />

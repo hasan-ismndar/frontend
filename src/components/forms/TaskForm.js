@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import styles from '../../styles/forms/TaskForm.module.css';
-
-
+import { useRouter } from 'next/router';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '@/contexts/auth_context';
 export default function TaskForm({ onSubmit, initialData = {} }) {
   const [title, setTitle] = useState(initialData?.title || '');
   const [assignee, setAssignee] = useState(initialData?.assignee?.username || '');
@@ -9,10 +10,19 @@ export default function TaskForm({ onSubmit, initialData = {} }) {
   const [priority, setPriority] = useState(initialData?.priority || 'متوسطة');
   const [status, setStatus] = useState(initialData?.status || 'جاري');
   const [description, setDescription] = useState(initialData?.description || '');
+  const router = useRouter();
+  const { id: projectId } = router.query;
 
+  const { data: members, isSuccess, isLoading } = useQuery({
+    queryKey: ['projects', projectId, 'members'],
+    queryFn: async () => {
+      const res = await api.get(`/projects/${projectId}/members`);
+      return res.data.project.users;
+    },
+  });
+  console.log(assignee);
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("hello", priority);
     const taskData = {
       id: initialData?.id || 0,
       title,
@@ -22,8 +32,6 @@ export default function TaskForm({ onSubmit, initialData = {} }) {
       status,
       description,
     };
-
-    // console.log('✅ حفظ المهمة:', taskData);
     onSubmit?.(taskData);
   };
 
@@ -39,12 +47,19 @@ export default function TaskForm({ onSubmit, initialData = {} }) {
       />
 
       <label>المسؤول:</label>
-      <input
-        type="text"
+      <select
         value={assignee}
         onChange={(e) => setAssignee(e.target.value)}
         required
-      />
+      >
+        <option value="">-- اختر المسؤول --</option>
+        {isLoading && <option disabled>جارِ التحميل...</option>}
+        {isSuccess && members.map((member) => (
+          <option key={member.username} value={member.username}>
+            {member.username}
+          </option>
+        ))}
+      </select>
 
       <label>تاريخ الانتهاء:</label>
       <input

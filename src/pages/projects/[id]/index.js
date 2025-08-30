@@ -8,6 +8,7 @@ import Modal from '@/components/Modal';
 import { api } from '@/contexts/auth_context';
 import Link from 'next/link';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import TaskSubForm from '@/components/forms/TaskSubForm';
 export default function ProjectDetailsPage({ initialProject, initialTasks }) {
     const router = useRouter();
     const queryClient = useQueryClient();
@@ -107,14 +108,14 @@ export default function ProjectDetailsPage({ initialProject, initialTasks }) {
                 </section>
                 <section style={{ marginBottom: '30px' }}>
                     {
-                        project.permissions.includes('manage_members') &&
+                        project.role == 'admin' &&
                         <Link href={`/projects/${project.id}/members`} style={{ color: 'blue' }}>إدارة الأعضاء</Link>}
                 </section>
                 <section>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <h3>قائمة المهام</h3>
                         <button
-                            disabled={!project.permissions.includes('create_task')}
+                            disabled={!project.role == 'admin'}
                             onClick={() => setShowModal(true)}
                             style={{
                                 padding: '8px 16px',
@@ -130,7 +131,7 @@ export default function ProjectDetailsPage({ initialProject, initialTasks }) {
                     <div style={{ marginTop: '20px' }}>
                         {tasks.map((task) => (
                             <TaskCard
-                                permissions={task.permissions}
+
                                 key={task.id}
                                 task={task}
                                 onEdit={onEditTask}
@@ -148,20 +149,27 @@ export default function ProjectDetailsPage({ initialProject, initialTasks }) {
 
                     </Modal>
                     <Modal isOpen={isSelected} onClose={() => setisSelected(false)}>
-                        <TaskForm initialData={selectedTask} onSubmit={editTask} />
                         {error && (
                             <p style={{ color: 'red', marginTop: '10px', textAlign: 'center' }}>
                                 {error}
                             </p>
                         )}
+                        {
+                            // console.log(selectedTask)
+                            (selectedTask?.role == 'member' && selectedTask?.allowed == true) ?
+                                <TaskSubForm initialData={selectedTask} onSubmit={editTask} /> :
+                                <TaskForm initialData={selectedTask} onSubmit={editTask} />
+
+
+                        }
                     </Modal>
                     <Modal isOpen={!!viewTask} onClose={() => setViewTask(null)}>
                         {viewTask && (
-                            <div>
+                            <div className="taskDetailsParent">
                                 <h3>تفاصيل المهمة</h3>
                                 <p><strong>العنوان:</strong> {viewTask.title}</p>
                                 <p><strong>الوصف:</strong> {viewTask.description || 'لا يوجد وصف'}</p>
-                                <p><strong>الموعد:</strong> {viewTask.endDate}</p>
+                                <p><strong>الموعد:</strong> {new Date(viewTask.endDate).toLocaleDateString('en-CA')}</p>
                                 <p><strong>المسؤول:</strong> {viewTask.assignee.username}</p>
                                 <p><strong>الأولوية:</strong> {viewTask.priority}</p>
                                 <p><strong>الحالة:</strong> {viewTask.status}</p>
@@ -170,16 +178,6 @@ export default function ProjectDetailsPage({ initialProject, initialTasks }) {
                     </Modal>
                 </section>
             </main>
-            {/* <section>
-        
-       
-        
-      
-       
-      
-
-      </section>
-    </main > */}
         </>
     );
 }
@@ -188,7 +186,7 @@ export async function getServerSideProps({ req, params }) {
     const cookie = req.headers.cookie || '';
     const projectId = params.id;
     try {
-        const [projectRes, tasksRes] = await Promise.all(
+        const [projectRes, tasksRes, membersRes] = await Promise.all(
             [
                 fetch(`http://localhost:8000/projects/${projectId}`, {
                     headers: { cookie },
@@ -196,6 +194,9 @@ export async function getServerSideProps({ req, params }) {
                 fetch(`http://localhost:8000/projects/${projectId}/tasks`, {
                     headers: { cookie },
                 }),
+                // fetch(`http://localhost:8000/projects/${projectId}/members`, {
+                //     headers: { cookie },
+                // }),
             ]
         )
 
@@ -206,7 +207,7 @@ export async function getServerSideProps({ req, params }) {
         return {
             props: {
                 initialProject: projectData.project,
-                initialTasks: tasksData.tasks
+                initialTasks: tasksData.tasks,
             },
         };
     } catch (err) {

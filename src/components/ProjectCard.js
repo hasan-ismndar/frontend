@@ -1,7 +1,8 @@
 import styles from '../styles/components/ProjectCard.module.css';
 import Link from 'next/link';
 
-export default function ProjectCard({ project, onEdit, onDelete, permissions }) {
+export default function ProjectCard({ project, onEdit, onDelete, role }) {
+  console.log(role);
   const endDate = new Date(project.endDate)
   const dateOnly = new Date(endDate).toLocaleDateString('en-CA');
   return (
@@ -21,14 +22,14 @@ export default function ProjectCard({ project, onEdit, onDelete, permissions }) 
       <div style={{ display: 'flex', gap: '10px' }}>
         <Link href={`/projects/${project.id}`} className={styles.button}>عرض</Link>
         <button
-          disabled={!permissions.includes('edit_project')}
+          disabled={!(role == 'owner')}
           className={styles.button}
           onClick={onEdit}
           style={{ backgroundColor: '#ffa502' }}>
           تعديل
         </button>
         <button
-          disabled={!permissions.includes('delete_project')}
+          disabled={!(role == 'owner')}
           className={styles.button}
           onClick={onDelete}
           style={{ backgroundColor: '#e74c3c' }}>

@@ -9,7 +9,11 @@ import 'react-calendar/dist/Calendar.css';
 
 export default function CalendarPage({ tasks, projects }) {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const selectedDateStr = selectedDate.toISOString().split('T')[0];
+  // const selectedDateStr = selectedDate.toISOString().split('T')[0];
+  // const selectedDateStr = selectedDate.toISOString().split('T')[0];
+  const selectedDateStr = selectedDate.toLocaleDateString('sv-SE');
+
+  console.log(selectedDateStr);
   const tasksForDate = tasks.filter(task => ((new Date(task.endDate)).toISOString().split('T')[0]) === selectedDateStr);
   const getProjectName = (projectId) => {
     const project = projects.find(p => p.id === projectId);

@@ -84,41 +84,63 @@ export const AuthProvider = ({ children }) => {
     );
 
     const login = async (credentials, password) => {
-        const res = await api.post('/tokens', { credentials, password });
-        setAccessToken(res.data.accessToken);
-        setUser(res.data.user);
-        router.push('/dashboard');
+        try {
+            const res = await axios.post('http://localhost:8000/tokens', { credentials, password }, {
+                withCredentials: true,
+            });
+            setAccessToken(res.data.accessToken);
+            setUser(res.data.user);
+            router.push('/dashboard');
+        } catch (err) {
+            throw err;
+        }
     };
 
     const logout = async () => {
         try {
-            await api.post('/logout');
+            await axios.post(
+                'http://localhost:8000/logout',
+                {},
+                { withCredentials: true }
+            );
             setUser(null);
             setAccessToken(null);
-            router.push('/login');
+            window.location.href = '/login';
         } catch (err) {
             console.error('فشل تسجيل الخروج', err);
         }
     };
-    // const logout = () => {
-    //     setAccessToken(null);
-    //     setUser(null);
-    //     router.push('/login');
-    // };
 
     useEffect(() => {
         const fetchAccessToken = async () => {
             try {
                 const res = await api.post('/refresh');
                 setAccessToken(res.data.accessToken);
+
                 const userRes = await api.get('/me', {
                     headers: { Authorization: `Bearer ${res.data.accessToken}` },
                 });
+
                 setUser(userRes.data.user);
             } catch {
                 setAccessToken(null);
                 setUser(null);
-                router.push('/login');
+
+                const publicPaths = [
+                    '/',
+                    '/login',
+                    '/register',
+                    '/verify-email',
+                    // '/forgot-password'
+                ];
+
+                const isPublicPath = publicPaths.some((path) =>
+                    router.pathname.startsWith(path)
+                );
+
+                if (!isPublicPath) {
+                    router.push('/login');
+                }
             } finally {
                 setLoading(false);
             }

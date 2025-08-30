@@ -12,6 +12,7 @@ export default function Sidebar() {
           <li className={styles.navItem}><Link href="/chat">الدردشة</Link></li>
           <li className={styles.navItem}><Link href="/calendar">التقويم</Link></li>
           <li className={styles.navItem}><Link href="/invitations">الدعوات</Link></li>
+          <li className={styles.navItem}><Link href="/dashboard">الملف الشخصي </Link></li>
 
           <li className={styles.navItem} onClick={logout} style={{ cursor: 'pointer' }}>تسجيل الخروج</li>
 

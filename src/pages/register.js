@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "@/contexts/auth_context";
 import { useRouter } from "next/router";
+
 export default function Register() {
     const router = useRouter();
     const [formData, setFormData] = useState({
@@ -12,20 +13,18 @@ export default function Register() {
     });
 
     const [error, setError] = useState("");
-    const [successMessage, setSuccessMessage] = useState("");
-
     const registerMutation = useMutation({
         mutationFn: async (data) => {
             const res = await api.post("http://localhost:8000/register", data);
             return res.data;
         },
         onSuccess: () => {
-            setSuccessMessage("تم التسجيل بنجاح!");
             setFormData({ username: "", email: "", password: "", fullName: "" });
             setError("");
-            router.push('/login');
+            router.push("/check-email");
         },
         onError: (error) => {
+            console.log(error);
             const serverError = error?.response?.data?.error;
             setError(serverError || "حدث خطأ غير متوقع");
         },
@@ -34,13 +33,11 @@ export default function Register() {
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
         setError("");
-        setSuccessMessage("");
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         setError("");
-        setSuccessMessage("");
         registerMutation.mutate(formData);
     };
 
@@ -49,8 +46,6 @@ export default function Register() {
             <h2>تسجيل حساب</h2>
 
             {error && <p style={{ color: "red" }}>{error}</p>}
-            {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
-
             <form onSubmit={handleSubmit}>
                 <div style={{ marginBottom: "15px" }}>
                     <label>إسم المستخدم:</label>
@@ -101,13 +96,22 @@ export default function Register() {
                 </div>
 
                 <button
+                    style={{
+                        padding: "10px",
+                        backgroundColor: "#0070f3",
+                        color: "white",
+                        fontWeight: "bold",
+                        border: "none",
+                        cursor: "pointer",
+                        width: "100%",
+                    }}
                     type="submit"
                     disabled={registerMutation.isPending}
-                    style={{ padding: "10px", width: "100%" }}
+                // style={{ padding: "10px", width: "100%" }}
                 >
                     {registerMutation.isPending ? "جاري التسجيل..." : "تسجيل"}
                 </button>
             </form>
-        </div>
+        </div >
     );
 }

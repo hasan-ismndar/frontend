@@ -15,12 +15,14 @@ export default function ChatRoomPage() {
         socket.on('room-message-history', (msgs) => {
             setMessages(msgs);
         });
-
+        console.log(socket);
+        console.log(projectId);
 
         return () => {
             socket.off('room-message-history');
             socket.emit('leave-room', projectId);
         };
+
     }, [socket, projectId]);
 
     if (!socket || !projectId) return <p>جارٍ الاتصال...</p>;

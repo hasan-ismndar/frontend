@@ -4,8 +4,10 @@ import {
   PieChart, Pie, Cell,
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer
 } from 'recharts';
+import Link from 'next/link';
+import { useAuth } from '@/contexts/auth_context';
 export default function DashboardPage({ data }) {
-  console.log(data);
+  const { user } = useAuth();
   const taskStatusData = [
     { name: 'جارية', value: data.tasks.active },
     { name: 'مكتملة', value: data.tasks.completed },
@@ -25,10 +27,10 @@ export default function DashboardPage({ data }) {
   return (
     <>
       <Sidebar />
-      <Header title="لوحة الإحصائيات" />
+      <Header title="الملف الشخصي" />
 
       <main style={{ marginLeft: '220px', padding: '20px' }}>
-        <h2 style={{ marginBottom: '20px' }}>نظرة عامة</h2>
+        <h2 style={{ marginBottom: '20px' }}>الإحصائيات</h2>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '40px' }}>
           {/* مخطط دائري لحالة المهام */}
@@ -84,6 +86,46 @@ export default function DashboardPage({ data }) {
             </ResponsiveContainer>
           </div>
         </div>
+        <h2 style={{ fontSize: "30px", marginBottom: "15px", marginTop: "30px" }}>
+          المعلومات الشخصية
+        </h2>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr 1fr",
+            padding: "20px",
+            borderRadius: "12px",
+            fontFamily: "sans-serif",
+          }}
+        >
+
+
+          <div style={{ marginBottom: "10px" }}>
+            <strong>اسم المستخدم:</strong> {user?.username}
+          </div>
+
+          <div style={{ marginBottom: "10px" }}>
+            <strong>الاسم الكامل:</strong> {user?.fullName}
+          </div>
+
+          <div style={{ marginBottom: "10px" }}>
+            <strong>البريد الإلكتروني:</strong> {user?.email}
+          </div>
+
+          <div style={{ marginTop: "15px" }}>
+            <Link
+              href={"/reset-password"}
+              style={{
+                color: "#2563eb",
+                textDecoration: "none",
+                fontSize: "14px",
+              }}
+            >
+              تغيير كلمة المرور
+            </Link>
+          </div>
+        </div>
+
       </main>
 
     </>

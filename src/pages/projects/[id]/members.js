@@ -10,6 +10,8 @@ import { api } from "@/contexts/auth_context";
 export default function Members({ initialInvitations, initialProject }) {
     const router = useRouter();
     const [showModal, setShowModal] = useState(false);
+    const [error, setError] = useState('');
+
     const queryClient = useQueryClient();
     const { id: projectId } = router.query;
     const { data: project } = useQuery({
@@ -35,16 +37,17 @@ export default function Members({ initialInvitations, initialProject }) {
             return res.data.task;
         },
         onSuccess: () => {
+            setShowModal(false);
             queryClient.invalidateQueries(['invitations', projectId]);
         },
 
         onError: (err) => {
-            console.error('فشل تحديث المشروع:', err.response?.data?.error || err.message);
+            setError(err.response?.data?.error || "حدث خطأ");
         }
     })
     const sendInvitation = (username) => {
         sendInvitationMutations.mutate(username)
-        setShowModal(false);
+        // setShowModal(false);
     }
     return (
         <>
@@ -101,6 +104,11 @@ export default function Members({ initialInvitations, initialProject }) {
                 </div>
                 <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
                     <InvitationForm onSubmit={sendInvitation} />
+                    {error && (
+                        <p style={{ color: 'red', marginTop: '10px', textAlign: 'center' }}>
+                            {error}
+                        </p>
+                    )}
                 </Modal>
             </main>
 
